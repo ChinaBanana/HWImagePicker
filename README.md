@@ -1,6 +1,8 @@
 # HWImagePicker
 仿微信图片选择器
 
+![ImagePicker.gif](http://upload-images.jianshu.io/upload_images/2992566-775770de1fbb71d6.gif?imageMogr2/auto-orient/strip)
+
 #### USE 
 将ImagePicker文件夹加入到你的工程中，在需要使用的文件中 
 ```
