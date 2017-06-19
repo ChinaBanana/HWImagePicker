@@ -26,3 +26,4 @@ pickerView.naviBlock = ^(UINavigationController *naviCon) {
     [weakSelf presentViewController:naviCon animated:YES completion:nil];
 };
 ```
+**还不是很完善，如有问题，欢迎指出**
