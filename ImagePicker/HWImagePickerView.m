@@ -110,7 +110,11 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row == HWImagesManager.sharedManager.dataSource.count) {
         UINavigationController *naviCon = [[UINavigationController alloc] initWithRootViewController:[HWFetchImagesViewController new]];
-        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:naviCon animated:YES completion:nil];
+        if (self.naviBlock) {
+            self.naviBlock(naviCon);
+        }else {
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:naviCon animated:YES completion:nil];
+        }
     }
 }
 

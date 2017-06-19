@@ -109,7 +109,7 @@ static HWImagesManager *_imageManager = nil;
                 option.synchronous = NO;
                 option.resizeMode = PHImageRequestOptionsResizeModeFast;
                 
-                [_phImangeMnager requestImageForAsset:obj targetSize:CGSizeMake(50, 50) contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [_phImangeMnager requestImageForAsset:obj targetSize:CGSizeMake(100, 100) contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     [imageArr addObject:[[HWImageModel alloc] initWithInfo:info image:result asset:obj]];
                 }];
             }];
