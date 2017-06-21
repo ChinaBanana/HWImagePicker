@@ -37,6 +37,8 @@ static HWImagesManager *_imageManager = nil;
         [_phlibiary registerChangeObserver:self];
         _phImangeMnager = [PHImageManager defaultManager];
         _cachingManager = [PHCachingImageManager new];
+        _fetchDataArray = [NSMutableArray new];
+        _videosArray = [NSMutableArray new];
         
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         switch (status) {
@@ -71,6 +73,7 @@ static HWImagesManager *_imageManager = nil;
 
 - (void)dealloc {
     [_phlibiary unregisterChangeObserver:self];
+    [_cachingManager stopCachingImagesForAllAssets];
 }
 
 #pragma mark - Public methods
@@ -92,8 +95,8 @@ static HWImagesManager *_imageManager = nil;
 
 #pragma mark - Pravite methods
 - (void)initilzeDatas {
-    
-    _fetchDataArray = [NSMutableArray new];
+    [_videosArray removeAllObjects];
+    [_fetchDataArray removeAllObjects];
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     [smartAlbums enumerateObjectsUsingBlock:^(PHAssetCollection *obj, NSUInteger idx, BOOL * _Nonnull stop) {
         PHFetchResult *result = [PHAsset fetchAssetsInAssetCollection:obj options:nil];
@@ -102,7 +105,7 @@ static HWImagesManager *_imageManager = nil;
             HWFetchImagesModel *fetchModel = [HWFetchImagesModel new];
             fetchModel.name = obj.localizedTitle;
             NSMutableArray *imageArr = [NSMutableArray array];
-            
+            NSMutableArray *allAsset = [NSMutableArray array];
             [result enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 /// 图片会占用很多内存？
                 PHImageRequestOptions *option = [PHImageRequestOptions new];
@@ -112,10 +115,26 @@ static HWImagesManager *_imageManager = nil;
                 [_phImangeMnager requestImageForAsset:obj targetSize:CGSizeMake(100, 100) contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     [imageArr addObject:[[HWImageModel alloc] initWithInfo:info image:result asset:obj]];
                 }];
+                
+                [allAsset addObject:obj];
             }];
             fetchModel.imageModels = imageArr;
             [_fetchDataArray addObject:fetchModel];
+            
+            /// 将Assets 添加到缓存列表
+            PHImageRequestOptions *option = [PHImageRequestOptions new];
+            option.synchronous = NO;
+            option.networkAccessAllowed = YES;
+            [_cachingManager startCachingImagesForAssets:allAsset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option];
         }
+    }];
+    
+    PHFetchResult *videosFetch = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
+    [videosFetch enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        PHVideoRequestOptions *videoOption = [PHVideoRequestOptions new];
+        [_phImangeMnager requestAVAssetForVideo:obj options:videoOption resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            [_videosArray addObject:asset];
+        }];
     }];
 }
 
@@ -123,15 +142,11 @@ static HWImagesManager *_imageManager = nil;
     PHImageRequestOptions *option = [PHImageRequestOptions new];
     option.synchronous = NO;
     option.networkAccessAllowed = YES;
-    
-//    option.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
-//        NSLog(@"%f, %@", progress, error);
-//    };
-    
-    [_cachingManager startCachingImagesForAssets:@[asset] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option];
+    option.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+        NSLog(@"%f, %@", progress, error);
+    };
     
     [_phImangeMnager requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        [_cachingManager stopCachingImagesForAllAssets];
         handler(result);
     }];
 }
@@ -139,7 +154,7 @@ static HWImagesManager *_imageManager = nil;
 #pragma mark - PHPhotoLibraryChangeObserver delegate
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
-    
+    [self initilzeDatas];
 }
 
 #pragma mark - Getter

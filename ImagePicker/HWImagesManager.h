@@ -13,9 +13,9 @@
 @interface HWImagesManager : NSObject
 
 @property (nonatomic, class, readonly) HWImagesManager *sharedManager;
-
-@property (nonatomic, strong) NSMutableArray *dataSource;
 @property (nonatomic, strong) NSMutableArray *fetchDataArray;
+@property (nonatomic, strong) NSMutableArray *videosArray;
+@property (nonatomic, strong) NSMutableArray *dataSource;
 
 - (void)getOrginalImageOfAsset:(PHAsset *)asset succeed:(void (^)(UIImage *image))handler;
 

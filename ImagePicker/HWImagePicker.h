@@ -11,5 +11,6 @@
 
 #import "HWImagePickerView.h"
 #import "HWImageModel.h"
+#import "HWVideosViewController.h"
 
 #endif /* HWImagePicker_h */

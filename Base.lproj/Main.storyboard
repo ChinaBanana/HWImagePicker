@@ -20,13 +20,27 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lqs-pc-J7B">
+                                <rect key="frame" x="16" y="257" width="144" height="106"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="0.039704747644377925" blue="0.04362923453915124" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="addVideo"/>
+                                <connections>
+                                    <action selector="addVideoBtnClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="99Q-OY-A8K"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <navigationItem key="navigationItem" id="TAV-YN-SCd"/>
+                    <connections>
+                        <outlet property="addVideoBtn" destination="Lqs-pc-J7B" id="PQl-R5-d3t"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1079.2" y="119.1904047976012"/>
+            <point key="canvasLocation" x="972" y="118.29085457271366"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ACQ-yL-uQb">

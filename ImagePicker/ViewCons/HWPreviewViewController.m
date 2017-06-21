@@ -22,28 +22,42 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-        _imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.contentView addSubview:_imageView];
-        
-        _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        _activityView.center = self.contentView.center;
-        [self.contentView addSubview:_activityView];
+        [self.contentView addSubview:self.imageView];
+        [self.contentView addSubview:self.activityView];
     }
     return self;
 }
 
 - (void)configCellWithModel:(HWImageModel *)model {
     [self.activityView startAnimating];
-    _imageView.image = nil;
-    _imageView.image = model.thumbImage;
+    self.imageView.image = nil;
+    self.imageView.image = model.thumbImage;
     [HWImagesManager.sharedManager getOrginalImageOfAsset:model.asset succeed:^(UIImage *image) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.activityView stopAnimating];
-            _imageView.image = image;
+            image ? (self.imageView.image = image) : (self.imageView.image = model.thumbImage);
+            self.imageView.image = image;
         });
     }];
 }
+
+- (UIImageView *)imageView {
+    if (_imageView == nil) {
+        _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+        _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    }
+    return _imageView;
+}
+
+- (UIActivityIndicatorView *)activityView {
+    if (_activityView == nil) {
+        _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        _activityView.center = self.contentView.center;
+    }
+    return _activityView;
+}
+
+
 
 @end
 
@@ -105,7 +119,6 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     HWPreviewCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-    cell.backgroundView.contentMode = UIViewContentModeScaleAspectFit;
     [cell configCellWithModel:_dataSource[indexPath.row]];
     return cell;
 }

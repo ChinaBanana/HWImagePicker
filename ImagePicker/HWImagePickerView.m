@@ -69,7 +69,6 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        /// 淡淡的坑，当存在导航栏是，collectionView不能做为第一个视图添加到父视图中，否则cell布局会混乱
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
         
         CGFloat const itemWidth = (frame.size.width > frame.size.height ? frame.size.height : frame.size.width) - 10;

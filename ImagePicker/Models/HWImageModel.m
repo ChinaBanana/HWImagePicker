@@ -7,6 +7,7 @@
 //
 
 #import "HWImageModel.h"
+#import "HWImagesManager.h"
 
 @implementation HWImageModel
 
