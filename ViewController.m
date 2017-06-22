@@ -38,12 +38,16 @@
     // NSArray *array = pickerView.selectedArray;
 }
 
+/// 选择视频
 - (IBAction)addVideoBtnClicked:(id)sender {
     HWVideosViewController *videoCon = [[HWVideosViewController alloc] initWithBlock:^(AVURLAsset *asset) {
+        
+        // 选择视频完成后的操作
         AVPlayerViewController *playCon = [[AVPlayerViewController alloc] init];
         [playCon setPlayer:[AVPlayer playerWithURL:asset.URL]];
         
-        [self.navigationController pushViewController:playCon animated:YES];
+        // 视频数据
+        // NSData *data = [NSData dataWithContentsOfURL:asset.URL];
     }];
     [self presentViewController:[[UINavigationController alloc] initWithRootViewController:videoCon] animated:YES completion:nil];
 }
