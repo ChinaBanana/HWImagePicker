@@ -17,6 +17,14 @@ HWImagePickerView *pickerView = [[HWImagePickerView alloc] initWithFrame:CGRectM
 ```
 NSArray *array = pickerView.selectedArray;
 ```
+#### 选择视频
+```
+HWVideosViewController *videoCon = [[HWVideosViewController alloc] initWithBlock:^(AVURLAsset *asset) { 
+    // 选择视频完成后的操作   
+    // 视频数据
+    // NSData *data = [NSData dataWithContentsOfURL:asset.URL];
+}];
+```
 
 #### Issue
 如果当前视图已经是模态出的ViewController，则需要实现pickerView的naviBlock
