@@ -26,12 +26,4 @@ HWVideosViewController *videoCon = [[HWVideosViewController alloc] initWithBlock
 }];
 ```
 
-#### Issue
-如果当前视图已经是模态出的ViewController，则需要实现pickerView的naviBlock
-```
-__weak UIViewController *weakSelf = self;
-pickerView.naviBlock = ^(UINavigationController *naviCon) {
-    [weakSelf presentViewController:naviCon animated:YES completion:nil];
-};
-```
 **还不是很完善，如有问题，欢迎指出**
