@@ -30,6 +30,14 @@
                                     <action selector="addVideoBtnClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="99Q-OY-A8K"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QjY-u0-QHc">
+                                <rect key="frame" x="114" y="114" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="showViewCon:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fGb-2E-Ja3"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>

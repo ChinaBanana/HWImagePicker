@@ -109,8 +109,9 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row == HWImagesManager.sharedManager.dataSource.count) {
         UINavigationController *naviCon = [[UINavigationController alloc] initWithRootViewController:[HWFetchImagesViewController new]];
-        if (self.naviBlock) {
-            self.naviBlock(naviCon);
+        if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
+            /// 如果当前视图已经是模态出的视图，用这个方法，会有警告
+            [[UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController presentViewController:naviCon animated:YES completion:nil];
         }else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:naviCon animated:YES completion:nil];
         }

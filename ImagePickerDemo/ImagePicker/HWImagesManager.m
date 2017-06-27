@@ -130,10 +130,11 @@ static HWImagesManager *_imageManager = nil;
     }];
     
     PHFetchResult *videosFetch = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
+    if (videosFetch.count == 0) return;
     [videosFetch enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
         PHVideoRequestOptions *videoOption = [PHVideoRequestOptions new];
         [_phImangeMnager requestAVAssetForVideo:obj options:videoOption resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            [_videosArray addObject:asset];
+            if (asset) [_videosArray addObject:asset];
         }];
     }];
 }

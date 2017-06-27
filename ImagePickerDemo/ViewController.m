@@ -25,13 +25,6 @@
     
     // 只需要引入HWImagePicker.h 初始化，添加到当前视图就OK了，是不是超简单
     HWImagePickerView *pickerView = [[HWImagePickerView alloc] initWithFrame:CGRectMake(0, 66, self.view.bounds.size.width, 80)];
-    
-    // 这段代码只有在当前ViewController是模态出来的时才需要。
-    __weak UIViewController *weakSelf = self;
-    pickerView.naviBlock = ^(UINavigationController *naviCon) {
-        __strong UIViewController *strongSelf = weakSelf;
-        [strongSelf presentViewController:naviCon animated:YES completion:nil];
-    };
     [self.view addSubview:pickerView];
     
     // 选择完的图片都在这里

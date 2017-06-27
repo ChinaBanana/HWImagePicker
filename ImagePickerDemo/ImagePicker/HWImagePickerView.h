@@ -11,6 +11,5 @@
 @interface HWImagePickerView : UIView
 
 @property (nonatomic, strong, readonly) NSArray *selectedArray;
-@property (nonatomic, copy) void (^ naviBlock)(UINavigationController *naviCon);
 
 @end
