@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) PHPhotoLibrary *phlibiary;
 @property (nonatomic, strong) PHImageManager *phImangeMnager;
-@property (nonatomic, strong) PHCachingImageManager *cachingManager;
+@property (nonatomic, strong) PHCachingImageManager *catchingManager;
 
 @end
 
@@ -36,9 +36,10 @@ static HWImagesManager *_imageManager = nil;
         _phlibiary = [PHPhotoLibrary sharedPhotoLibrary];
         [_phlibiary registerChangeObserver:self];
         _phImangeMnager = [PHImageManager defaultManager];
-        _cachingManager = [PHCachingImageManager new];
+        _catchingManager = [PHCachingImageManager new];
         _fetchDataArray = [NSMutableArray new];
         _videosArray = [NSMutableArray new];
+        _catchEnabled = NO;
         
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         switch (status) {
@@ -47,11 +48,7 @@ static HWImagesManager *_imageManager = nil;
                 break;
             case PHAuthorizationStatusNotDetermined:{
                 [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                    if (status == PHAuthorizationStatusAuthorized) {
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                            [self initilzeDatas];
-                        });
-                    }
+                    
                 }];
             }
                 break;
@@ -73,7 +70,7 @@ static HWImagesManager *_imageManager = nil;
 
 - (void)dealloc {
     [_phlibiary unregisterChangeObserver:self];
-    [_cachingManager stopCachingImagesForAllAssets];
+    [_catchingManager stopCachingImagesForAllAssets];
 }
 
 #pragma mark - Public methods
@@ -107,7 +104,7 @@ static HWImagesManager *_imageManager = nil;
             NSMutableArray *imageArr = [NSMutableArray array];
             NSMutableArray *allAsset = [NSMutableArray array];
             [result enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                /// 图片会占用很多内存？
+                /// 图片会占用很多
                 PHImageRequestOptions *option = [PHImageRequestOptions new];
                 option.synchronous = NO;
                 option.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -121,11 +118,15 @@ static HWImagesManager *_imageManager = nil;
             fetchModel.imageModels = imageArr;
             [_fetchDataArray addObject:fetchModel];
             
-            /// 将Assets 添加到缓存列表
-            PHImageRequestOptions *option = [PHImageRequestOptions new];
-            option.synchronous = NO;
-            option.networkAccessAllowed = YES;
-            [_cachingManager startCachingImagesForAssets:allAsset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option];
+            /// 缓存
+            if (_catchEnabled) {
+                PHImageRequestOptions *option = [PHImageRequestOptions new];
+                option.synchronous = NO;
+                option.networkAccessAllowed = YES;
+                [_catchingManager startCachingImagesForAssets:allAsset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option];
+            }else{
+                [_catchingManager stopCachingImagesForAllAssets];
+            }
         }
     }];
     
@@ -158,7 +159,13 @@ static HWImagesManager *_imageManager = nil;
     [self initilzeDatas];
 }
 
-#pragma mark - Getter
+#pragma mark - Getter and Setter
+
+- (void)setCatchEnabled:(BOOL)catchEnabled {
+    _catchEnabled = catchEnabled;
+    [self initilzeDatas];
+}
+
 - (NSMutableArray *)dataSource {
     if (_dataSource == nil) {
         _dataSource = [NSMutableArray array];
