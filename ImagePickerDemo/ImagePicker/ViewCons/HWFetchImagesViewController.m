@@ -36,7 +36,11 @@
 
 - (void)configCellWithModel:(HWFetchImagesModel *)model {
     HWImageModel *imageM = model.imageModels[0];
-    _coverImage.image = imageM.thumbImage;
+    [HWImagesManager.sharedManager getThumbImageOfAsset:imageM.asset result:^(UIImage *image) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _coverImage.image = image;
+        });
+    }];
     _nameLabel.text = [NSString stringWithFormat:@"%@(%ld)", model.name, (long)model.imageModels.count];
 }
 

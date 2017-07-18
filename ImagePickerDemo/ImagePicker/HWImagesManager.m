@@ -90,53 +90,29 @@ static HWImagesManager *_imageManager = nil;
     [[HWImagesManager.sharedManager mutableArrayValueForKey:@"dataSource"] removeAllObjects];
 }
 
-#pragma mark - Pravite methods
-- (void)initilzeDatas {
-    [_videosArray removeAllObjects];
-    [_fetchDataArray removeAllObjects];
-    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-    [smartAlbums enumerateObjectsUsingBlock:^(PHAssetCollection *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        PHFetchResult *result = [PHAsset fetchAssetsInAssetCollection:obj options:nil];
-        
-        if (result.count > 0){
-            HWFetchImagesModel *fetchModel = [HWFetchImagesModel new];
-            fetchModel.name = obj.localizedTitle;
-            NSMutableArray *imageArr = [NSMutableArray array];
-            NSMutableArray *allAsset = [NSMutableArray array];
-            [result enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                /// 图片会占用很多
-                PHImageRequestOptions *option = [PHImageRequestOptions new];
-                option.synchronous = NO;
-                option.resizeMode = PHImageRequestOptionsResizeModeFast;
-                
-                [_phImangeMnager requestImageForAsset:obj targetSize:CGSizeMake(100, 100) contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                    [imageArr addObject:[[HWImageModel alloc] initWithInfo:info image:result asset:obj]];
-                }];
-                
-                [allAsset addObject:obj];
-            }];
-            fetchModel.imageModels = imageArr;
-            [_fetchDataArray addObject:fetchModel];
-            
-            /// 缓存
-            if (_catchEnabled) {
-                PHImageRequestOptions *option = [PHImageRequestOptions new];
-                option.synchronous = NO;
-                option.networkAccessAllowed = YES;
-                [_catchingManager startCachingImagesForAssets:allAsset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:option];
-            }else{
-                [_catchingManager stopCachingImagesForAllAssets];
-            }
-        }
-    }];
+/// 获取不同规格的图片
+- (void)getThumbImageOfAsset:(PHAsset *)asset result:(void (^)(UIImage *image))handler{
+    PHImageRequestOptions *option = [PHImageRequestOptions new];
+    option.synchronous = NO;
+    option.networkAccessAllowed = YES;
+    option.resizeMode = PHImageRequestOptionsResizeModeFast;
     
-    PHFetchResult *videosFetch = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
-    if (videosFetch.count == 0) return;
-    [videosFetch enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        PHVideoRequestOptions *videoOption = [PHVideoRequestOptions new];
-        [_phImangeMnager requestAVAssetForVideo:obj options:videoOption resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            if (asset) [_videosArray addObject:asset];
-        }];
+    [_phImangeMnager requestImageForAsset:asset targetSize:CGSizeMake(80, 80) contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        handler(result);
+    }];
+}
+
+- (void)getStandImageOfAsset:(PHAsset *)asset succeed:(void (^)(UIImage *image))handler {
+    PHImageRequestOptions *option = [PHImageRequestOptions new];
+    option.synchronous = NO;
+    option.networkAccessAllowed = YES;
+    
+    [_phImangeMnager requestImageForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        NSData *imageData = UIImageJPEGRepresentation(result, 0.1);
+        if (!imageData) {
+            imageData = UIImagePNGRepresentation(result);
+        }
+        handler([UIImage imageWithData:imageData]);
     }];
 }
 
@@ -153,6 +129,37 @@ static HWImagesManager *_imageManager = nil;
     }];
 }
 
+#pragma mark - Pravite methods
+- (void)initilzeDatas {
+    [_videosArray removeAllObjects];
+    [_fetchDataArray removeAllObjects];
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    [smartAlbums enumerateObjectsUsingBlock:^(PHAssetCollection *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        PHFetchResult *result = [PHAsset fetchAssetsInAssetCollection:obj options:nil];
+    
+        if (result.count > 0){
+            HWFetchImagesModel *fetchModel = [HWFetchImagesModel new];
+            fetchModel.fetchRusult = result;
+            fetchModel.name = obj.localizedTitle;
+            __block NSMutableArray *imageArr = [NSMutableArray array];
+            [result enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [imageArr addObject:[[HWImageModel alloc] initWithAsset:obj]];
+            }];
+            fetchModel.imageModels = imageArr;
+            [_fetchDataArray addObject:fetchModel];
+        }
+    }];
+    
+    PHFetchResult *videosFetch = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
+    if (videosFetch.count == 0) return;
+    [videosFetch enumerateObjectsUsingBlock:^(PHAsset *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        PHVideoRequestOptions *videoOption = [PHVideoRequestOptions new];
+        [_phImangeMnager requestAVAssetForVideo:obj options:videoOption resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            if (asset) [_videosArray addObject:asset];
+        }];
+    }];
+}
+
 #pragma mark - PHPhotoLibraryChangeObserver delegate
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
@@ -163,7 +170,11 @@ static HWImagesManager *_imageManager = nil;
 
 - (void)setCatchEnabled:(BOOL)catchEnabled {
     _catchEnabled = catchEnabled;
-    [self initilzeDatas];
+    if(catchEnabled){
+        [self initilzeDatas];
+    } else {
+        [_catchingManager stopCachingImagesForAllAssets];
+    }
 }
 
 - (NSMutableArray *)dataSource {

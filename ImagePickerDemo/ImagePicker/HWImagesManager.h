@@ -18,6 +18,8 @@
 @property (nonatomic, strong) NSMutableArray *dataSource;
 @property (nonatomic, assign) BOOL catchEnabled; // 是否开启缓存，当开启缓存时，缓存原照片，这里不建议开启，会占用非常多的内存；
 
+- (void)getThumbImageOfAsset:(PHAsset *)asset result:(void (^)(UIImage *image))handler;
+- (void)getStandImageOfAsset:(PHAsset *)asset succeed:(void (^)(UIImage *image))handler;
 - (void)getOrginalImageOfAsset:(PHAsset *)asset succeed:(void (^)(UIImage *image))handler;
 
 + (BOOL)containModel:(HWImageModel *)model;

@@ -7,6 +7,8 @@
 //
 
 #import "HWFetchImagesModel.h"
+#import <Photos/Photos.h>
+#import "HWImageModel.h"
 
 @implementation HWFetchImagesModel
 

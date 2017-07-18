@@ -32,7 +32,7 @@
     [self.activityView startAnimating];
     self.imageView.image = nil;
     self.imageView.image = model.thumbImage;
-    [HWImagesManager.sharedManager getOrginalImageOfAsset:model.asset succeed:^(UIImage *image) {
+    [HWImagesManager.sharedManager getStandImageOfAsset:model.asset succeed:^(UIImage *image) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.activityView stopAnimating];
             image ? (self.imageView.image = image) : (self.imageView.image = model.thumbImage);

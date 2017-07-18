@@ -53,7 +53,11 @@
 
 - (void)configCellWithModel:(HWImageModel *)model {
     self.model = model;
-    _contentImage.image = model.thumbImage;
+    [HWImagesManager.sharedManager getThumbImageOfAsset:model.asset result:^(UIImage *image) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _contentImage.image = image;
+        });
+    }];
     _selectedBtn.selected = [HWImagesManager containModel:self.model];
 }
 

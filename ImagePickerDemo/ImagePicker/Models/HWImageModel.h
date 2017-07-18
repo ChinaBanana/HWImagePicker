@@ -12,12 +12,12 @@
 @interface HWImageModel : NSObject
 
 @property (nonatomic, readonly, strong) NSDictionary *infos;
-@property (nonatomic, readonly, strong) UIImage *thumbImage; // 缩略图
 @property (nonatomic, readonly, strong) PHAsset *asset;
 
+@property (nonatomic, strong) UIImage *thumbImage; // 缩略图
 @property (nonatomic, strong) UIImage *standerdImage; // 压缩标准图
 @property (nonatomic, strong) UIImage *orginalImage; // 原图
 
-- (instancetype)initWithInfo:(NSDictionary *)info image:(UIImage *)image asset:(PHAsset *)asset;;
+- (instancetype)initWithAsset:(PHAsset *)asset;
 
 @end
